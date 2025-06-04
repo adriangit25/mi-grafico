@@ -3,286 +3,345 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard de Visualización de Datos - DataWrapper</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <title>Deducibilidad al Impuesto a la Renta - Dashboard Analítico</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
-        .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        * {
+            font-family: 'Inter', sans-serif;
         }
+        
+        body {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            min-height: 100vh;
+        }
+        
         .glass-effect {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
+            border-radius: 20px;
             border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
         }
+        
+        .card-modern {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: none;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+        
+        .card-modern:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
+        }
+        
+        .header-section {
+            background: linear-gradient(135deg, #0d7377 0%, #14a085 100%);
+            color: white;
+            padding: 4rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            animation: float 20s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translate(0px, 0px) rotate(0deg); }
+            33% { transform: translate(30px, -30px) rotate(120deg); }
+            66% { transform: translate(-20px, 20px) rotate(240deg); }
+        }
+        
+        .icon-container {
+            background: linear-gradient(45deg, #00c9ff, #92fe9d);
+            width: 80px;
+            height: 80px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0, 201, 255, 0.3);
+        }
+        
         .chart-container {
             position: relative;
-            height: 400px;
-            background: rgba(255, 255, 255, 0.95);
             border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         }
-        .floating-card {
-            transform: translateY(0);
+        
+        .chart-container iframe {
+            border: none;
+            border-radius: 15px;
+        }
+        
+        .stats-card {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stats-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+        
+        .section-title {
+            position: relative;
+            margin-bottom: 3rem;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(45deg, #00c9ff, #92fe9d);
+            border-radius: 2px;
+        }
+        
+        .floating-elements {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        
+        .floating-elements::before,
+        .floating-elements::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            animation: floatAnimation 15s ease-in-out infinite;
+        }
+        
+        .floating-elements::before {
+            width: 200px;
+            height: 200px;
+            top: 10%;
+            left: 80%;
+            animation-delay: -5s;
+        }
+        
+        .floating-elements::after {
+            width: 150px;
+            height: 150px;
+            bottom: 20%;
+            left: 10%;
+            animation-delay: -10s;
+        }
+        
+        @keyframes floatAnimation {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+        
+        .btn-modern {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 50px;
+            padding: 12px 30px;
+            color: white;
+            font-weight: 500;
             transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
-        .floating-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-        }
-        .pulse-animation {
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-        .world-map {
-            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 500"><rect width="1000" height="500" fill="%23f0f9ff"/><g fill="%234f46e5" opacity="0.3"><circle cx="200" cy="150" r="30"/><circle cx="350" cy="180" r="25"/><circle cx="500" cy="120" r="35"/><circle cx="650" cy="200" r="20"/><circle cx="800" cy="160" r="28"/></g></svg>');
-            background-size: cover;
-            background-position: center;
+        
+        .btn-modern:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.6);
+            color: white;
         }
     </style>
 </head>
-<body class="bg-gray-50">
-    <!-- Header -->
-    <header class="gradient-bg text-white">
-        <nav class="container mx-auto px-6 py-4">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-4" data-aos="fade-right">
-                    <i class="fas fa-chart-line text-3xl"></i>
-                    <h1 class="text-2xl font-bold">DataWrapper Dashboard</h1>
+<body>
+    <!-- Header Section -->
+    <section class="header-section">
+        <div class="floating-elements"></div>
+        <div class="container position-relative">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <h1 class="display-4 font-weight-bold mb-4">
+                        <i class="fas fa-chart-line me-3"></i>
+                        Deducibilidad al Impuesto a la Renta
+                    </h1>
+                    <p class="lead mb-4">Análisis integral de actividades culturales y distribución de financiamiento certificado</p>
+                    <button class="btn btn-modern">
+                        <i class="fas fa-download me-2"></i>
+                        Descargar Reporte
+                    </button>
                 </div>
-                <div class="hidden md:flex space-x-6" data-aos="fade-left">
-                    <a href="#visualizations" class="hover:text-blue-200 transition">Visualizaciones</a>
-                    <a href="#about" class="hover:text-blue-200 transition">Acerca de</a>
-                    <a href="#contact" class="hover:text-blue-200 transition">Contacto</a>
-                </div>
-            </div>
-        </nav>
-    </header>
-
-    <!-- Hero Section -->
-    <section class="gradient-bg text-white py-20">
-        <div class="container mx-auto px-6 text-center">
-            <h2 class="text-5xl font-bold mb-6" data-aos="fade-up">
-                Visualización de Datos Globales
-            </h2>
-            <p class="text-xl mb-8 max-w-3xl mx-auto" data-aos="fade-up" data-aos-delay="200">
-                Explora datos abiertos del mundo a través de visualizaciones interactivas y dinámicas 
-                creadas con las mejores herramientas de análisis de datos.
-            </p>
-            <div class="flex justify-center space-x-4" data-aos="fade-up" data-aos-delay="400">
-                <button class="bg-white text-blue-600 px-8 py-3 rounded-full font-semibold hover:bg-blue-50 transition">
-                    <i class="fas fa-play mr-2"></i>Comenzar Exploración
-                </button>
-                <button class="border-2 border-white text-white px-8 py-3 rounded-full font-semibold hover:bg-white hover:text-blue-600 transition">
-                    <i class="fas fa-download mr-2"></i>Descargar Datos
-                </button>
-            </div>
-        </div>
-    </section>
-
-    <!-- Stats Section -->
-    <section class="py-16 bg-white">
-        <div class="container mx-auto px-6">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                <div class="text-center floating-card bg-gradient-to-br from-blue-500 to-purple-600 text-white p-8 rounded-2xl" data-aos="fade-up">
-                    <i class="fas fa-globe text-4xl mb-4"></i>
-                    <h3 class="text-3xl font-bold">195</h3>
-                    <p class="text-blue-100">Países Analizados</p>
-                </div>
-                <div class="text-center floating-card bg-gradient-to-br from-green-500 to-blue-600 text-white p-8 rounded-2xl" data-aos="fade-up" data-aos-delay="100">
-                    <i class="fas fa-chart-bar text-4xl mb-4"></i>
-                    <h3 class="text-3xl font-bold">1.2M</h3>
-                    <p class="text-green-100">Puntos de Datos</p>
-                </div>
-                <div class="text-center floating-card bg-gradient-to-br from-purple-500 to-pink-600 text-white p-8 rounded-2xl" data-aos="fade-up" data-aos-delay="200">
-                    <i class="fas fa-users text-4xl mb-4"></i>
-                    <h3 class="text-3xl font-bold">7.8B</h3>
-                    <p class="text-purple-100">Población Mundial</p>
-                </div>
-                <div class="text-center floating-card bg-gradient-to-br from-orange-500 to-red-600 text-white p-8 rounded-2xl" data-aos="fade-up" data-aos-delay="300">
-                    <i class="fas fa-wifi text-4xl mb-4"></i>
-                    <h3 class="text-3xl font-bold">4.9B</h3>
-                    <p class="text-orange-100">Usuarios Internet</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Visualizations Section -->
-    <section id="visualizations" class="py-20 bg-gray-50">
-        <div class="container mx-auto px-6">
-            <div class="text-center mb-16" data-aos="fade-up">
-                <h2 class="text-4xl font-bold text-gray-800 mb-4">Visualizaciones Interactivas</h2>
-                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-                    Explora diferentes tipos de gráficos creados con datos abiertos de fuentes confiables
-                </p>
-            </div>
-
-            <!-- Chart 1: World Map -->
-            <div class="mb-16" data-aos="fade-up">
-                <div class="bg-white rounded-3xl shadow-2xl overflow-hidden floating-card">
-                    <div class="gradient-bg text-white p-6">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <h3 class="text-2xl font-bold mb-2">Mapa de Coropletas - PIB Mundial</h3>
-                                <p class="text-blue-100">Producto Interno Bruto por País (2024)</p>
-                            </div>
-                            <i class="fas fa-map text-3xl opacity-50"></i>
-                        </div>
-                    </div>
-                    <div class="p-8">
-                        <div class="world-map h-96 rounded-2xl mb-6 flex items-center justify-center">
-                            <div class="text-center">
-                                <i class="fas fa-globe-americas text-6xl text-blue-500 mb-4 pulse-animation"></i>
-                                <h4 class="text-2xl font-bold text-gray-700 mb-2">Mapa Interactivo del PIB</h4>
-                                <p class="text-gray-600">Visualización de la distribución económica global</p>
-                            </div>
-                        </div>
-                        <div class="flex flex-wrap gap-4 justify-center">
-                            <span class="bg-red-100 text-red-800 px-4 py-2 rounded-full text-sm">
-                                <span class="w-3 h-3 bg-red-500 rounded-full inline-block mr-2"></span>
-                                PIB Alto (>$1T)
-                            </span>
-                            <span class="bg-yellow-100 text-yellow-800 px-4 py-2 rounded-full text-sm">
-                                <span class="w-3 h-3 bg-yellow-500 rounded-full inline-block mr-2"></span>
-                                PIB Medio ($100B-$1T)
-                            </span>
-                            <span class="bg-green-100 text-green-800 px-4 py-2 rounded-full text-sm">
-                                <span class="w-3 h-3 bg-green-500 rounded-full inline-block mr-2"></span>
-                                PIB Bajo (<$100B)
-                            </span>
-                        </div>
-                        <p class="text-sm text-gray-500 mt-4">
-                            <strong>Fuente:</strong> Fondo Monetario Internacional (FMI) - Base de datos WEO
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Chart 2: Bar Chart -->
-            <div class="mb-16" data-aos="fade-up">
-                <div class="bg-white rounded-3xl shadow-2xl overflow-hidden floating-card">
-                    <div class="bg-gradient-to-r from-green-500 to-blue-600 text-white p-6">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <h3 class="text-2xl font-bold mb-2">Gráfico de Barras - Calidad del Aire</h3>
-                                <p class="text-green-100">Niveles de PM2.5 por Ciudades Principales</p>
-                            </div>
-                            <i class="fas fa-chart-bar text-3xl opacity-50"></i>
-                        </div>
-                    </div>
-                    <div class="p-8">
-                        <div class="chart-container">
-                            <canvas id="barChart"></canvas>
-                        </div>
-                        <p class="text-sm text-gray-500 mt-4">
-                            <strong>Fuente:</strong> OpenAQ - Red Global de Monitoreo de Calidad del Aire
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Chart 3: Line Chart -->
-            <div class="mb-16" data-aos="fade-up">
-                <div class="bg-white rounded-3xl shadow-2xl overflow-hidden floating-card">
-                    <div class="bg-gradient-to-r from-purple-500 to-pink-600 text-white p-6">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <h3 class="text-2xl font-bold mb-2">Gráfico de Líneas - Población Mundial</h3>
-                                <p class="text-purple-100">Crecimiento Demográfico (1950-2024)</p>
-                            </div>
-                            <i class="fas fa-chart-line text-3xl opacity-50"></i>
-                        </div>
-                    </div>
-                    <div class="p-8">
-                        <div class="chart-container">
-                            <canvas id="lineChart"></canvas>
-                        </div>
-                        <p class="text-sm text-gray-500 mt-4">
-                            <strong>Fuente:</strong> Banco Mundial - Indicadores de Desarrollo Mundial
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Chart 4: Pie Chart -->
-            <div class="mb-16" data-aos="fade-up">
-                <div class="bg-white rounded-3xl shadow-2xl overflow-hidden floating-card">
-                    <div class="bg-gradient-to-r from-orange-500 to-red-600 text-white p-6">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <h3 class="text-2xl font-bold mb-2">Gráfico Circular - Tráfico de Internet</h3>
-                                <p class="text-orange-100">Distribución por Regiones Mundiales</p>
-                            </div>
-                            <i class="fas fa-chart-pie text-3xl opacity-50"></i>
-                        </div>
-                    </div>
-                    <div class="p-8">
-                        <div class="chart-container">
-                            <canvas id="pieChart"></canvas>
-                        </div>
-                        <p class="text-sm text-gray-500 mt-4">
-                            <strong>Fuente:</strong> Internet World Stats - Estadísticas de Uso de Internet
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Original DataWrapper Integration -->
-            <div class="mb-16" data-aos="fade-up">
-                <div class="bg-white rounded-3xl shadow-2xl overflow-hidden floating-card">
-                    <div class="gradient-bg text-white p-6">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <h3 class="text-2xl font-bold mb-2">Gráfico Original de DataWrapper</h3>
-                                <p class="text-blue-100">Visualización Integrada</p>
-                            </div>
-                            <i class="fas fa-external-link-alt text-3xl opacity-50"></i>
-                        </div>
-                    </div>
-                    <div class="p-8">
-                        <div style="min-height:400px" id="datawrapper-vis-dHyjM">
-                            <script type="text/javascript" defer src="https://datawrapper.dwcdn.net/dHyjM/embed.js" charset="utf-8" data-target="#datawrapper-vis-dHyjM"></script>
-                            <noscript><img src="https://datawrapper.dwcdn.net/dHyjM/full.png" alt="Gráfico de DataWrapper" /></noscript>
-                        </div>
+                <div class="col-lg-4 text-center">
+                    <div class="glass-effect p-4">
+                        <i class="fas fa-analytics text-white" style="font-size: 4rem; opacity: 0.8;"></i>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- About Section -->
-    <section id="about" class="py-20 bg-white">
-        <div class="container mx-auto px-6">
-            <div class="max-w-4xl mx-auto text-center" data-aos="fade-up">
-                <h2 class="text-4xl font-bold text-gray-800 mb-8">Acerca del Proyecto</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-12 mt-16">
-                    <div class="text-left" data-aos="fade-right">
-                        <div class="flex items-center mb-4">
-                            <i class="fas fa-database text-3xl text-blue-500 mr-4"></i>
-                            <h3 class="text-2xl font-bold text-gray-800">Datos Abiertos</h3>
-                        </div>
-                        <p class="text-gray-600">
-                            Utilizamos fuentes confiables como el Banco Mundial, FMI, OpenAQ e Internet World Stats 
-                            para garantizar la precisión y actualidad de nuestras visualizaciones.
-                        </p>
+    <!-- Stats Overview -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row g-4 mb-5">
+                <div class="col-md-4">
+                    <div class="stats-card">
+                        <i class="fas fa-music" style="font-size: 2.5rem; margin-bottom: 1rem;"></i>
+                        <h3>Actividades</h3>
+                        <p class="mb-0">Culturales Analizadas</p>
                     </div>
-                    <div class="text-left" data-aos="fade-left">
-                        <div class="flex items-center mb-4">
-                            <i class="fas fa-chart-area text-3xl text-green-500 mr-4"></i>
-                            <h3 class="text-2xl font-bold text-gray-800">Visualizaciones Dinámicas</h3>
+                </div>
+                <div class="col-md-4">
+                    <div class="stats-card">
+                        <i class="fas fa-dollar-sign" style="font-size: 2.5rem; margin-bottom: 1rem;"></i>
+                        <h3>Montos</h3>
+                        <p class="mb-0">Certificados Evaluados</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stats-card">
+                        <i class="fas fa-users" style="font-size: 2.5rem; margin-bottom: 1rem;"></i>
+                        <h3>Género</h3>
+                        <p class="mb-0">Análisis de Equidad</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Charts Section -->
+    <section class="py-5">
+        <div class="container">
+            <!-- Chart 1 -->
+            <div class="row mb-5">
+                <div class="col-12">
+                    <div class="card-modern p-4">
+                        <div class="d-flex align-items-center mb-4">
+                            <div class="icon-container me-4">
+                                <i class="fas fa-chart-bar"></i>
+                            </div>
+                            <div>
+                                <h2 class="section-title mb-0">Actividad Cultural vs Monto Certificado</h2>
+                                <p class="text-muted mb-0">Comparación de diferentes disciplinas culturales y los montos certificados recibidos</p>
+                            </div>
                         </div>
-                        <p class="text-gray-600">
-                            Implementamos gráficos interactivos usando Chart.js y DataWrapper para crear 
-                            experiencias de usuario envolventes y educativas.
-                        </p>
+                        <div class="chart-container">
+                            <iframe 
+                                title="grafico1" 
+                                width="100%" 
+                                height="600" 
+                                src="https://app.powerbi.com/reportEmbed?reportId=39019216-b507-428e-8fbd-29d090a3d21b&autoAuth=true&ctid=c1334b2f-1af3-4eb6-9d2a-d3c35370ce94" 
+                                allowFullScreen="true">
+                            </iframe>
+                        </div>
+                        <div class="mt-4 p-3 bg-light rounded">
+                            <p class="mb-0">
+                                <i class="fas fa-info-circle text-primary me-2"></i>
+                                <strong>Insights:</strong> Observamos cuáles disciplinas culturales han sido las más beneficiadas con fondos, identificando áreas de concentración del apoyo económico y sectores menos favorecidos.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chart 2 -->
+            <div class="row mb-5">
+                <div class="col-12">
+                    <div class="card-modern p-4">
+                        <div class="d-flex align-items-center mb-4">
+                            <div class="icon-container me-4" style="background: linear-gradient(45deg, #4ecdc4, #44a08d);">
+                                <i class="fas fa-chart-pie"></i>
+                            </div>
+                            <div>
+                                <h2 class="section-title mb-0">Tipo de Propuesta vs Patrocinio Esperado</h2>
+                                <p class="text-muted mb-0">Distribución del patrocinio esperado según el tipo de propuesta presentada</p>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <iframe 
+                                title="grafico2" 
+                                width="100%" 
+                                height="600" 
+                                src="https://app.powerbi.com/reportEmbed?reportId=20f0ea12-c67f-4a65-b6de-16b12e0421ca&autoAuth=true&ctid=c1334b2f-1af3-4eb6-9d2a-d3c35370ce94" 
+                                allowFullScreen="true">
+                            </iframe>
+                        </div>
+                        <div class="mt-4 p-3 bg-light rounded">
+                            <p class="mb-0">
+                                <i class="fas fa-lightbulb text-warning me-2"></i>
+                                <strong>Análisis:</strong> Identificamos si propuestas como videojuegos, conciertos o largometrajes están solicitando más fondos, revelando tendencias actuales en proyectos culturales.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chart 3 -->
+            <div class="row mb-5">
+                <div class="col-12">
+                    <div class="card-modern p-4">
+                        <div class="d-flex align-items-center mb-4">
+                            <div class="icon-container me-4" style="background: linear-gradient(45deg, #a8edea, #fed6e3);">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div>
+                                <h2 class="section-title mb-0">Género vs Monto Certificado</h2>
+                                <p class="text-muted mb-0">Análisis de equidad en la distribución del financiamiento según género</p>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <iframe 
+                                title="grafico3" 
+                                width="100%" 
+                                height="600" 
+                                src="https://app.powerbi.com/reportEmbed?reportId=6fe9484b-886c-4cec-adc4-6218db0b6d88&autoAuth=true&ctid=c1334b2f-1af3-4eb6-9d2a-d3c35370ce94" 
+                                allowFullScreen="true">
+                            </iframe>
+                        </div>
+                        <div class="mt-4 p-3 bg-light rounded">
+                            <p class="mb-0">
+                                <i class="fas fa-balance-scale text-success me-2"></i>
+                                <strong>Equidad:</strong> Evaluamos la existencia de brechas de género en el acceso a fondos culturales, elemento clave para políticas públicas de cultura equitativas.
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -290,198 +349,27 @@
     </section>
 
     <!-- Footer -->
-    <footer class="gradient-bg text-white py-12">
-        <div class="container mx-auto px-6">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div data-aos="fade-up">
-                    <h3 class="text-2xl font-bold mb-4">DataWrapper Dashboard</h3>
-                    <p class="text-blue-100">
-                        Transformando datos en conocimiento a través de visualizaciones impactantes 
-                        y análisis profundo de tendencias globales.
-                    </p>
+    <footer class="bg-dark text-white py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5><i class="fas fa-chart-line me-2"></i>Dashboard Analítico</h5>
+                    <p class="text-muted">Análisis integral de deducibilidad al impuesto a la renta en actividades culturales</p>
                 </div>
-                <div data-aos="fade-up" data-aos-delay="100">
-                    <h4 class="text-xl font-semibold mb-4">Enlaces Rápidos</h4>
-                    <ul class="space-y-2 text-blue-100">
-                        <li><a href="#" class="hover:text-white transition">Documentación</a></li>
-                        <li><a href="#" class="hover:text-white transition">API</a></li>
-                        <li><a href="#" class="hover:text-white transition">Tutoriales</a></li>
-                        <li><a href="#" class="hover:text-white transition">Soporte</a></li>
-                    </ul>
+                <div class="col-md-6 text-md-end">
+                    <p class="text-muted mb-0">© 2025 Dashboard de Análisis Cultural</p>
+                    <p class="text-muted">Datos actualizados en tiempo real</p>
                 </div>
-                <div data-aos="fade-up" data-aos-delay="200">
-                    <h4 class="text-xl font-semibold mb-4">Contacto</h4>
-                    <div class="space-y-2 text-blue-100">
-                        <p><i class="fas fa-envelope mr-2"></i>info@datawrapper-dashboard.com</p>
-                        <p><i class="fas fa-phone mr-2"></i>+593 2 123-4567</p>
-                        <p><i class="fas fa-map-marker-alt mr-2"></i>Quito, Ecuador</p>
-                    </div>
-                </div>
-            </div>
-            <div class="border-t border-blue-400 mt-8 pt-8 text-center text-blue-100">
-                <p>&copy; 2025 DataWrapper Dashboard. Todos los derechos reservados.</p>
             </div>
         </div>
     </footer>
 
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Smooth scrolling and interactions -->
     <script>
-        // Initialize AOS
-        AOS.init({
-            duration: 1000,
-            once: true
-        });
-
-        // Bar Chart
-        const barCtx = document.getElementById('barChart').getContext('2d');
-        new Chart(barCtx, {
-            type: 'bar',
-            data: {
-                labels: ['Beijing', 'Delhi', 'Mumbai', 'Los Angeles', 'Mexico DF', 'Sao Paulo', 'Cairo', 'Bangkok'],
-                datasets: [{
-                    label: 'PM2.5 (μg/m³)',
-                    data: [85, 98, 64, 28, 45, 32, 78, 52],
-                    backgroundColor: [
-                        '#ef4444', '#dc2626', '#b91c1c', '#22c55e', '#f59e0b', '#22c55e', '#ef4444', '#f59e0b'
-                    ],
-                    borderRadius: 8,
-                    borderSkipped: false,
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false
-                    },
-                    title: {
-                        display: true,
-                        text: 'Niveles de Contaminación del Aire (PM2.5)',
-                        font: {
-                            size: 16,
-                            weight: 'bold'
-                        }
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: 'Concentración PM2.5 (μg/m³)'
-                        }
-                    },
-                    x: {
-                        title: {
-                            display: true,
-                            text: 'Ciudades'
-                        }
-                    }
-                }
-            }
-        });
-
-        // Line Chart
-        const lineCtx = document.getElementById('lineChart').getContext('2d');
-        new Chart(lineCtx, {
-            type: 'line',
-            data: {
-                labels: ['1950', '1960', '1970', '1980', '1990', '2000', '2010', '2020', '2024'],
-                datasets: [{
-                    label: 'Población Mundial (Billones)',
-                    data: [2.5, 3.0, 3.7, 4.4, 5.3, 6.1, 6.9, 7.8, 8.1],
-                    borderColor: '#8b5cf6',
-                    backgroundColor: 'rgba(139, 92, 246, 0.1)',
-                    borderWidth: 4,
-                    fill: true,
-                    tension: 0.4,
-                    pointBackgroundColor: '#8b5cf6',
-                    pointBorderColor: '#ffffff',
-                    pointBorderWidth: 3,
-                    pointRadius: 6
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false
-                    },
-                    title: {
-                        display: true,
-                        text: 'Crecimiento de la Población Mundial (1950-2024)',
-                        font: {
-                            size: 16,
-                            weight: 'bold'
-                        }
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: false,
-                        title: {
-                            display: true,
-                            text: 'Población (Billones)'
-                        }
-                    },
-                    x: {
-                        title: {
-                            display: true,
-                            text: 'Año'
-                        }
-                    }
-                }
-            }
-        });
-
-        // Pie Chart
-        const pieCtx = document.getElementById('pieChart').getContext('2d');
-        new Chart(pieCtx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Asia', 'Europa', 'América del Norte', 'América Latina', 'África', 'Oceanía'],
-                datasets: [{
-                    data: [49.7, 15.9, 14.6, 10.5, 8.2, 1.1],
-                    backgroundColor: [
-                        '#ef4444',
-                        '#3b82f6',
-                        '#10b981',
-                        '#f59e0b',
-                        '#8b5cf6',
-                        '#ec4899'
-                    ],
-                    borderWidth: 3,
-                    borderColor: '#ffffff'
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            padding: 20,
-                            usePointStyle: true,
-                            font: {
-                                size: 12
-                            }
-                        }
-                    },
-                    title: {
-                        display: true,
-                        text: 'Distribución del Tráfico de Internet por Región (2024)',
-                        font: {
-                            size: 16,
-                            weight: 'bold'
-                        }
-                    }
-                }
-            }
-        });
-
-        // Smooth scrolling
+        // Smooth scrolling for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
@@ -491,15 +379,36 @@
             });
         });
 
-        // Add interactive hover effects
-        document.querySelectorAll('.floating-card').forEach(card => {
-            card.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-10px) scale(1.02)';
+        // Add scroll effect to cards
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
             });
-            
-            card.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(0) scale(1)';
+        }, observerOptions);
+
+        // Observe all cards
+        document.querySelectorAll('.card-modern').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(card);
+        });
+
+        // Add loading animation to iframes
+        document.querySelectorAll('iframe').forEach(iframe => {
+            iframe.addEventListener('load', function() {
+                this.style.opacity = '1';
             });
+            iframe.style.opacity = '0';
+            iframe.style.transition = 'opacity 0.5s ease';
         });
     </script>
 </body>
